@@ -1,16 +1,11 @@
 Config = {}
 
--- If you use -1 for testing the fish is very easy to catch --
-Config.Difficulty = 1250
+-- settings
+Config.Difficulty = 1250 -- use -1 for testing
 Config.ReelSpeed = 0.0125
-Config.defaultlang = "en_lang"
-
-Config.DiscordIntegration = false
-Config.DiscordWebHook = ""
-Config.DiscordBotName= "Vorp Fishing"
-Config.DiscordAvatar = ""
 Config.Debug = false
 
+-- fishing baits
 Config.Baits = {
 	"p_baitBread01x",
 	"p_baitCorn01x",
@@ -28,7 +23,7 @@ Config.Baits = {
     "p_lgoc_spinner_v6",
 }
 
-
+-- bait to catch fish
 Config.BaitsPerFish = {
     ["p_baitBread01x"] = {
         "A_C_FISHBLUEGIL_01_MS",
@@ -261,8 +256,9 @@ Config.BaitsPerFish = {
     }
 }
 
+-- prompt language (change as required)
 Config.Lang = {
-
+	--------------------------------
 	ReadyToFish = "Ready to fish!",
     PrepRod = "Prepare Fishing Rod",
     ThrowHook = "Cast Fishing Rod",
@@ -280,23 +276,16 @@ Config.Lang = {
     KeepFish = "Keep Fish",
     ThrowFish = "Throw Fish",
     --------------------------------
-    discord_fishCaught = "caught a fish!",
-    discord_fishKept = "The fish was kept!  😁",
-    discord_fishThrow = "The fish was throw out! 😭",
-    discord_fieldFishName = "🦈 Fish Name: ",
-    discord_fieldFishWeight = "⚖ Weight: "
 }
 
-
-
-
+-- fish data
 Config.fishData = {
 	A_C_FISHBLUEGIL_01_MS        = {"Blue Gil (Medium)","PROVISION_FISH_BLUEGILL","PROVISION_BLUEGILL_DESC"},
 	A_C_FISHBLUEGIL_01_SM        = {"Blue Gil (Small)","PROVISION_FISH_BLUEGILL","PROVISION_BLUEGILL_DESC"},
-	A_C_FISHBULLHEADCAT_01_MS    = {"Bullhead Cat (medium)","PROVISION_FISH_BULLHEAD_CATFISH","PROVISION_BLUEGILL_DESC"},
-	A_C_FISHBULLHEADCAT_01_SM    = {"Bullhead Cat (small)","PROVISION_FISH_BULLHEAD_CATFISH","PROVISION_BLUEGILL_DESC"},
-	A_C_FISHCHAINPICKEREL_01_MS  = {"Chain Pickerel (medium)","PROVISION_FISH_CHAIN_PICKEREL","PROVISION_CHNPKRL_DESC"},
-	A_C_FISHCHAINPICKEREL_01_SM  = {"Chain Pickerel (small)","PROVISION_FISH_CHAIN_PICKEREL","PROVISION_CHNPKRL_DESC"},
+	A_C_FISHBULLHEADCAT_01_MS    = {"Bullhead Cat (Medium)","PROVISION_FISH_BULLHEAD_CATFISH","PROVISION_BLUEGILL_DESC"},
+	A_C_FISHBULLHEADCAT_01_SM    = {"Bullhead Cat (Small)","PROVISION_FISH_BULLHEAD_CATFISH","PROVISION_BLUEGILL_DESC"},
+	A_C_FISHCHAINPICKEREL_01_MS  = {"Chain Pickerel (Medium)","PROVISION_FISH_CHAIN_PICKEREL","PROVISION_CHNPKRL_DESC"},
+	A_C_FISHCHAINPICKEREL_01_SM  = {"Chain Pickerel (Small)","PROVISION_FISH_CHAIN_PICKEREL","PROVISION_CHNPKRL_DESC"},
 	A_C_FISHCHANNELCATFISH_01_LG = {"Channel Catfish (Large)","PROVISION_FISH_CHANNEL_CATFISH","PROVISION_CHNCATFSH_DESC"},
 	A_C_FISHCHANNELCATFISH_01_XL = {"Channel Catfish (Extra Large)","PROVISION_FISH_CHANNEL_CATFISH","PROVISION_CHNCATFSH_DESC"},
 	A_C_FISHLAKESTURGEON_01_LG   = {"Lake Sturgeon (Large)","PROVISION_FISH_LAKE_STURGEON","PROVISION_LKSTURG_DESC"},
@@ -305,19 +294,17 @@ Config.fishData = {
 	A_C_FISHLONGNOSEGAR_01_LG    = {"Long Nose Gar (Large)","PROVISION_FISH_LONGNOSE_GAR","PROVISION_LNGNOSEGAR_DESC"},
 	A_C_FISHMUSKIE_01_LG         = {"Muskie (Large)","PROVISION_FISH_MUSKIE","PROVISION_MUSKIE_DESC"},
 	A_C_FISHNORTHERNPIKE_01_LG   = {"Northern Pike (Large)","PROVISION_FISH_NORTHERN_PIKE","PROVISION_NPIKE_DESC"},
-	A_C_FISHPERCH_01_MS          = {"Perch (medium)","PROVISION_FISH_PERCH","PROVISION_PERCH_DESC"},
-	A_C_FISHPERCH_01_SM          = {"Perch (small)","PROVISION_FISH_PERCH","PROVISION_PERCH_DESC"},
+	A_C_FISHPERCH_01_MS          = {"Perch (Medium)","PROVISION_FISH_PERCH","PROVISION_PERCH_DESC"},
+	A_C_FISHPERCH_01_SM          = {"Perch (Small)","PROVISION_FISH_PERCH","PROVISION_PERCH_DESC"},
 	A_C_FISHRAINBOWTROUT_01_LG   = {"Rainbow Trout (Large)","PROVISION_FISH_STEELHEAD_TROUT","PROVISION_FISH_STHDTROUT_DESC"},
 	A_C_FISHRAINBOWTROUT_01_MS   = {"Rainbow Trout (Medium)","PROVISION_FISH_STEELHEAD_TROUT","PROVISION_FISH_STHDTROUT_DESC"},
 	A_C_FISHREDFINPICKEREL_01_MS = {"Red Fin Pickerel (Medium)","PROVISION_FISH_REDFIN_PICKEREL","PROVISION_RDFNPCKREL_DESC"},
 	A_C_FISHREDFINPICKEREL_01_SM = {"Red Fin Pickerel (Small)","PROVISION_FISH_REDFIN_PICKEREL","PROVISION_RDFNPCKREL_DESC"},
-	A_C_FISHROCKBASS_01_MS       = {"Rock Bass (medium)","PROVISION_FISH_ROCK_BASS","PROVISION_ROCKBASS_DESC"},
-	A_C_FISHROCKBASS_01_SM       = {"Rock Bass (small)","PROVISION_FISH_ROCK_BASS","PROVISION_ROCKBASS_DESC"},
+	A_C_FISHROCKBASS_01_MS       = {"Rock Bass (Medium)","PROVISION_FISH_ROCK_BASS","PROVISION_ROCKBASS_DESC"},
+	A_C_FISHROCKBASS_01_SM       = {"Rock Bass (Small)","PROVISION_FISH_ROCK_BASS","PROVISION_ROCKBASS_DESC"},
 	A_C_FISHSALMONSOCKEYE_01_LG  = {"Salmon Sockeye (Large)","PROVISION_FISH_SOCKEYE_SALMON_LEGENDARY","PROVISION_SCKEYESAL_DESC"},
 	A_C_FISHSALMONSOCKEYE_01_ML  = {"Salmon Sockeye (Medium-Large)","PROVISION_FISH_SOCKEYE_SALMON","PROVISION_SCKEYESAL_DESC"},
 	A_C_FISHSALMONSOCKEYE_01_MS  = {"Salmon Sockeye (Medium)","PROVISION_FISH_SOCKEYE_SALMON","PROVISION_SCKEYESAL_DESC"},
 	A_C_FISHSMALLMOUTHBASS_01_LG = {"Small Mouth Bass (Large)","PROVISION_FISH_SMALLMOUTH_BASS","PROVISION_SMLMTHBASS_DESC"},
 	A_C_FISHSMALLMOUTHBASS_01_MS = {"Small Mouth Bass (Medium)","PROVISION_FISH_SMALLMOUTH_BASS","PROVISION_SMLMTHBASS_DESC"},
 }
-
-

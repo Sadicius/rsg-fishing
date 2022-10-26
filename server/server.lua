@@ -1,9 +1,87 @@
-local VorpCore = {}
-TriggerEvent("getCore",function(core)
-    VorpCore = core
+local QRCore = exports['qr-core']:GetCoreObject()
+
+-- make bait useable
+QRCore.Functions.CreateUseableItem("p_baitbread01x", function(source, item)
+    local Player = QRCore.Functions.GetPlayer(source)
+	TriggerClientEvent("qr-fishing:client:usebait", source, item.name)
 end)
 
-VorpInv = exports.vorp_inventory:vorp_inventoryApi()
+QRCore.Functions.CreateUseableItem("p_baitcorn01x", function(source, item)
+    local Player = QRCore.Functions.GetPlayer(source)
+	TriggerClientEvent("qr-fishing:client:usebait", source, item.name)
+end)
+
+QRCore.Functions.CreateUseableItem("p_baitcheese01x", function(source, item)
+    local Player = QRCore.Functions.GetPlayer(source)
+	TriggerClientEvent("qr-fishing:client:usebait", source, item.name)
+end)
+
+QRCore.Functions.CreateUseableItem("p_baitworm01x", function(source, item)
+    local Player = QRCore.Functions.GetPlayer(source)
+	TriggerClientEvent("qr-fishing:client:usebait", source, item.name)
+end)
+
+QRCore.Functions.CreateUseableItem("p_baitcricket01x", function(source, item)
+    local Player = QRCore.Functions.GetPlayer(source)
+	TriggerClientEvent("qr-fishing:client:usebait", source, item.name)
+end)
+
+QRCore.Functions.CreateUseableItem("p_crawdad01x", function(source, item)
+    local Player = QRCore.Functions.GetPlayer(source)
+	TriggerClientEvent("qr-fishing:client:usebait", source, item.name)
+end)
+
+QRCore.Functions.CreateUseableItem("p_finishedragonfly01x", function(source, item)
+    local Player = QRCore.Functions.GetPlayer(source)
+	TriggerClientEvent("qr-fishing:client:usebait", source, item.name)
+end)
+
+QRCore.Functions.CreateUseableItem("p_finisdfishlure01x", function(source, item)
+    local Player = QRCore.Functions.GetPlayer(source)
+	TriggerClientEvent("qr-fishing:client:usebait", source, item.name)
+end)
+
+QRCore.Functions.CreateUseableItem("p_finishdcrawd01x", function(source, item)
+    local Player = QRCore.Functions.GetPlayer(source)
+	TriggerClientEvent("qr-fishing:client:usebait", source, item.name)
+end)
+
+QRCore.Functions.CreateUseableItem("p_finishedragonflylegendary01x", function(source, item)
+    local Player = QRCore.Functions.GetPlayer(source)
+	if Player.Functions.RemoveItem(item.name, 1, item.slot) then
+        TriggerClientEvent("qr-fishing:client:usebait", source, item.name)
+    end
+end)
+
+QRCore.Functions.CreateUseableItem("p_finisdfishlurelegendary01x", function(source, item)
+    local Player = QRCore.Functions.GetPlayer(source)
+	TriggerClientEvent("qr-fishing:client:usebait", source, item.name)
+end)
+
+QRCore.Functions.CreateUseableItem("p_finishdcrawdlegendary01x", function(source, item)
+    local Player = QRCore.Functions.GetPlayer(source)
+	TriggerClientEvent("qr-fishing:client:usebait", source, item.name)
+end)
+
+QRCore.Functions.CreateUseableItem("p_lgoc_spinner_v4", function(source, item)
+    local Player = QRCore.Functions.GetPlayer(source)
+	TriggerClientEvent("qr-fishing:client:usebait", source, item.name)
+end)
+
+QRCore.Functions.CreateUseableItem("p_lgoc_spinner_v6", function(source, item)
+    local Player = QRCore.Functions.GetPlayer(source)
+	TriggerClientEvent("qr-fishing:client:usebait", source, item.name)
+end)
+-- end of make bait useable
+
+-- remove bait when used on fishing rod
+RegisterServerEvent('qr-fishing:server:removeBaitItem')
+AddEventHandler('qr-fishing:server:removeBaitItem', function(item)
+	local src = source
+	local Player = QRCore.Functions.GetPlayer(src)
+	Player.Functions.RemoveItem(item, 1)
+	TriggerClientEvent("inventory:client:ItemBox", src, QRCore.Shared.Items[item], "remove")
+end)
 
 local fishEntity = {
     [`A_C_FISHBLUEGIL_01_MS`]        = "a_c_fishbluegil_01_ms",
@@ -65,84 +143,14 @@ local fishNames = {
     [`A_C_FISHSMALLMOUTHBASS_01_MS`] = Config.fishData.A_C_FISHSMALLMOUTHBASS_01_MS[1],
 }
 
-Citizen.CreateThread(function()
-    Citizen.Wait(2000)
-    for index,item in pairs(Config.Baits) do
-        VorpInv.RegisterUsableItem(item, function(data)
-    		local UsableBait = item
-    		VorpInv.subItem(data.source, UsableBait, 1)
-    		TriggerClientEvent("vorp_fishing:UseBait", data.source, UsableBait)
-            VorpInv.CloseInv(data.source)
-        end)
-    end
-end)
-
-RegisterServerEvent('vorp_fishing:FishToInventory')
-AddEventHandler("vorp_fishing:FishToInventory", function(fishModel)
-    local _source = source
-    local User = VorpCore.getUser(source)
-    local Character = User.getUsedCharacter
+-- add fish caught to inventory
+RegisterServerEvent('qr-fishing:FishToInventory')
+AddEventHandler("qr-fishing:FishToInventory", function(fishModel)
+    local src = source
+    local Player = QRCore.Functions.GetPlayer(src)
 	local fish = fishEntity[fishModel]
 	local fish_name = fishNames[fishModel]
-	VorpInv.addItem(_source, fish, 1)
-	TriggerClientEvent("vorp:TipBottom", _source, 'You got a '..fish_name, 4000)
+	Player.Functions.AddItem(fish, 1)
+	TriggerClientEvent("inventory:client:ItemBox", src, QRCore.Shared.Items[fish], "add")
+	TriggerClientEvent('QRCore:Notify', src, 'You got a '..fish_name, 'primary')
 end)
-
-RegisterServerEvent('vorp_fishing:discord')
-AddEventHandler("vorp_fishing:discord", function(fishModel, fishWeight, staus)
-    local _source = source
-    local _status = staus
-    local User = VorpCore.getUser(source)
-    local Character = User.getUsedCharacter
-	local fish = fishEntity[fishModel]
-	local fish_name = fishNames[fishModel]
-    local fish_weight = string.format("%.2f%%", (fishWeight * 54.25))
-    local botname = Config.DiscordBotName
-    local avatar = Config.DiscordAvatar
-    local webhook = Config.DiscordWebHook
-    local CharName
-    local _description
-    if Character ~= nil then
-        if Character.lastname ~= nil then
-            CharName = Character.firstname .. ' ' .. Character.lastname
-        else
-            CharName = Character.firstname
-        end
-    end
-
-    if _status == "keep" then
-        _description = _U("discord_fishKept")
-    elseif _status == "throw" then
-        _description = _U("discord_fishThrow")
-    end
-
-    local embeds = {
-            {
-                ["title"] = CharName .." ".._U("discord_fishCaught"),
-                ["description"] = _description,
-                ["type"]="rich",
-                ["color"] = 4777493,
-                ["fields"] = {
-                    {
-                        ["name"] = _U("discord_fieldFishName"),
-                        ["value"] = fish_name,
-                        ["inline"] = true,
-                    },{
-                        ["name"] = _U("discord_fieldFishWeight"),
-                        ["value"] = fish_weight:gsub("%%", "").."Kg",
-                        ["inline"] = true,
-                    },
-                },
-                ["footer"]=  {
-                    ["text"]= "Vorp Fishing",
-                },
-            }
-        }
-        PerformHttpRequest(webhook, function(err, text, headers) end, 'POST', json.encode({ username = botname,embeds = embeds}), { ['Content-Type'] = 'application/json' })
-end)
-
-
-
-
-
-
