@@ -6,6 +6,9 @@
 # Framework QRCore RedM Edition
 - https://github.com/QRCore-RedM-Re
 
+# Showcase
+[![Watch the video](https://img.youtube.com/vi/ogOUm9MKatM/maxresdefault.jpg)](https://youtu.be/ogOUm9MKatM)
+
 # Dependancies
 - qr-core
 
