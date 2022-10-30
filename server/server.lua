@@ -3,80 +3,80 @@ local QRCore = exports['qr-core']:GetCoreObject()
 -- make bait useable
 QRCore.Functions.CreateUseableItem("p_baitbread01x", function(source, item)
     local Player = QRCore.Functions.GetPlayer(source)
-	TriggerClientEvent("qr-fishing:client:usebait", source, item.name)
+	TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
 end)
 
 QRCore.Functions.CreateUseableItem("p_baitcorn01x", function(source, item)
     local Player = QRCore.Functions.GetPlayer(source)
-	TriggerClientEvent("qr-fishing:client:usebait", source, item.name)
+	TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
 end)
 
 QRCore.Functions.CreateUseableItem("p_baitcheese01x", function(source, item)
     local Player = QRCore.Functions.GetPlayer(source)
-	TriggerClientEvent("qr-fishing:client:usebait", source, item.name)
+	TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
 end)
 
 QRCore.Functions.CreateUseableItem("p_baitworm01x", function(source, item)
     local Player = QRCore.Functions.GetPlayer(source)
-	TriggerClientEvent("qr-fishing:client:usebait", source, item.name)
+	TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
 end)
 
 QRCore.Functions.CreateUseableItem("p_baitcricket01x", function(source, item)
     local Player = QRCore.Functions.GetPlayer(source)
-	TriggerClientEvent("qr-fishing:client:usebait", source, item.name)
+	TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
 end)
 
 QRCore.Functions.CreateUseableItem("p_crawdad01x", function(source, item)
     local Player = QRCore.Functions.GetPlayer(source)
-	TriggerClientEvent("qr-fishing:client:usebait", source, item.name)
+	TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
 end)
 
 QRCore.Functions.CreateUseableItem("p_finishedragonfly01x", function(source, item)
     local Player = QRCore.Functions.GetPlayer(source)
-	TriggerClientEvent("qr-fishing:client:usebait", source, item.name)
+	TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
 end)
 
 QRCore.Functions.CreateUseableItem("p_finisdfishlure01x", function(source, item)
     local Player = QRCore.Functions.GetPlayer(source)
-	TriggerClientEvent("qr-fishing:client:usebait", source, item.name)
+	TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
 end)
 
 QRCore.Functions.CreateUseableItem("p_finishdcrawd01x", function(source, item)
     local Player = QRCore.Functions.GetPlayer(source)
-	TriggerClientEvent("qr-fishing:client:usebait", source, item.name)
+	TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
 end)
 
 QRCore.Functions.CreateUseableItem("p_finishedragonflylegendary01x", function(source, item)
     local Player = QRCore.Functions.GetPlayer(source)
 	if Player.Functions.RemoveItem(item.name, 1, item.slot) then
-        TriggerClientEvent("qr-fishing:client:usebait", source, item.name)
+        TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
     end
 end)
 
 QRCore.Functions.CreateUseableItem("p_finisdfishlurelegendary01x", function(source, item)
     local Player = QRCore.Functions.GetPlayer(source)
-	TriggerClientEvent("qr-fishing:client:usebait", source, item.name)
+	TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
 end)
 
 QRCore.Functions.CreateUseableItem("p_finishdcrawdlegendary01x", function(source, item)
     local Player = QRCore.Functions.GetPlayer(source)
-	TriggerClientEvent("qr-fishing:client:usebait", source, item.name)
+	TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
 end)
 
 QRCore.Functions.CreateUseableItem("p_lgoc_spinner_v4", function(source, item)
     local Player = QRCore.Functions.GetPlayer(source)
-	TriggerClientEvent("qr-fishing:client:usebait", source, item.name)
+	TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
 end)
 
 QRCore.Functions.CreateUseableItem("p_lgoc_spinner_v6", function(source, item)
     local Player = QRCore.Functions.GetPlayer(source)
-	TriggerClientEvent("qr-fishing:client:usebait", source, item.name)
+	TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
 end)
 -- end of make bait useable
 
 -- remove bait when used on fishing rod
-RegisterServerEvent('qr-fishing:server:removeBaitItem')
-AddEventHandler('qr-fishing:server:removeBaitItem', function(item)
+RegisterServerEvent('rsg-fishing:server:removeBaitItem')
+AddEventHandler('rsg-fishing:server:removeBaitItem', function(item)
 	local src = source
 	local Player = QRCore.Functions.GetPlayer(src)
 	Player.Functions.RemoveItem(item, 1)
@@ -144,8 +144,8 @@ local fishNames = {
 }
 
 -- add fish caught to inventory
-RegisterServerEvent('qr-fishing:FishToInventory')
-AddEventHandler("qr-fishing:FishToInventory", function(fishModel)
+RegisterServerEvent('rsg-fishing:FishToInventory')
+AddEventHandler("rsg-fishing:FishToInventory", function(fishModel)
     local src = source
     local Player = QRCore.Functions.GetPlayer(src)
 	local fish = fishEntity[fishModel]

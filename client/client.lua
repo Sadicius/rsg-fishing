@@ -48,8 +48,8 @@ local fishs = {
     [`A_C_FISHSMALLMOUTHBASS_01_MS`] = Config.fishData.A_C_FISHSMALLMOUTHBASS_01_MS[1],
 }
 
-RegisterNetEvent('qr-fishing:client:usebait')
-AddEventHandler('qr-fishing:client:usebait', function(UsableBait)
+RegisterNetEvent('rsg-fishing:client:usebait')
+AddEventHandler('rsg-fishing:client:usebait', function(UsableBait)
 Citizen.CreateThread(function()
         Citizen.InvokeNative(0x1096603B519C905F, "MMFSH")
         prepareMyPrompt()    
@@ -64,7 +64,7 @@ Citizen.CreateThread(function()
 			QRCore.Functions.Notify('You need to use your fishing rod first.', 'error')
 			return
 		end
-		TriggerServerEvent('qr-fishing:server:removeBaitItem', currentLure)
+		TriggerServerEvent('rsg-fishing:server:removeBaitItem', currentLure)
         while fishing do
             Wait(0)
             GET_TASK_FISHING_DATA()
@@ -203,10 +203,10 @@ Citizen.CreateThread(function()
                             local fishHandle = FISHING_GET_FISH_HANDLE()
                             local x,y,z = table.unpack(GetEntityCoords(fishHandle))
 
-                            local r = exports["qr-fishing"]:VERTICAL_PROBE(x, y,  z, 1)
+                            local r = exports["rsg-fishing"]:VERTICAL_PROBE(x, y,  z, 1)
                             local valid, height = r[1], r[2]
                                                         
-                        -- import from ptfx on qr-fishing c# version
+                        -- import from ptfx on rsg-fishing c# version
                         local particlecoords = GetEntityCoords(fishHandle)
                         RequestNamedPtfxAsset(GetHashKey('scr_mg_fishing'))
                             while not HasNamedPtfxAssetLoaded(GetHashKey('scr_mg_fishing')) do
@@ -244,7 +244,7 @@ Citizen.CreateThread(function()
                         end
                         TaskSmartFleeCoord(fishHandle, GetEntityCoords(playerPed), 40.0, 50, 8, 1077936128)
                                                 
-                         -- import from ptfx on qr-fishing c# version
+                         -- import from ptfx on rsg-fishing c# version
                         local particlecoords = GetEntityCoords(fishHandle)
                         RequestNamedPtfxAsset(GetHashKey('scr_mg_fishing'))
                             while not HasNamedPtfxAssetLoaded(GetHashKey('scr_mg_fishing')) do
@@ -287,7 +287,7 @@ Citizen.CreateThread(function()
                             status = "keep"
                             local entity = FISHING_GET_FISH_HANDLE()
                             local fishModel = GetEntityModel(entity)
-                            TriggerServerEvent("qr-fishing:FishToInventory", fishModel)
+                            TriggerServerEvent("rsg-fishing:FishToInventory", fishModel)
                             SetEntityAsMissionEntity(entity, true, true)
                             Wait(3000)
                             DeleteEntity(entity)
@@ -354,7 +354,7 @@ Citizen.CreateThread(function()
 end)
 
 function GET_TASK_FISHING_DATA()
-    local r = exports["qr-fishing"]:GET_TASK_FISHING_DATA_EXTRA()
+    local r = exports["rsg-fishing"]:GET_TASK_FISHING_DATA_EXTRA()
     hasMinigameOn = r[1]
     local outAsInt = r[2]
     local outAsFloat = r[3]
@@ -407,7 +407,7 @@ end
 
 function SET_TASK_FISHING_DATA()
     if fishing_minigame_struct.f_0 ~= nil then
-        exports["qr-fishing"]:SET_TASK_FISHING_DATA_EXTRA(fishing_minigame_struct)
+        exports["rsg-fishing"]:SET_TASK_FISHING_DATA_EXTRA(fishing_minigame_struct)
     end
 end
 

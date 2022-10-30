@@ -17,13 +17,13 @@
 
 # Installation:
 - ensure that the dependancies are added and started
-- add qr-fishing to your resources folder
+- add rsg-fishing to your resources folder
 - add items to your "\qr-core\shared\items.lua"
 - add items to your "\qr-core\shared\weapons.lua"
 - add images to your "\qr-inventory\html\images"
 
 # Starting the resource:
-- add the following to your server.cfg file : ensure qr-fishing
+- add the following to your server.cfg file : ensure rsg-fishing
 
 # Credits
 - original source FRP_Framework : https://github.com/Faroeste-Roleplay/frp-lua-rdr3
