@@ -1,4 +1,4 @@
-local QRCore = exports['qr-core']:GetCoreObject()
+local RSGCore = exports['rsg-core']:GetCoreObject()
 local fishing_minigame_struct = {}
 local fishing_lure_cooldown = 0
 local ready = false
@@ -61,7 +61,7 @@ Citizen.CreateThread(function()
 		local weapon = Citizen.InvokeNative(0x8425C5F057012DAB, PlayerPedId())
 		local weaponName = Citizen.InvokeNative(0x89CF5FF3D363311E, weapon, Citizen.ResultAsString())
 		if weaponName ~= "WEAPON_FISHINGROD" then
-			QRCore.Functions.Notify('You need to use your fishing rod first.', 'error')
+			RSGCore.Functions.Notify('You need to use your fishing rod first.', 'error')
 			return
 		end
 		TriggerServerEvent('rsg-fishing:server:removeBaitItem', currentLure)
