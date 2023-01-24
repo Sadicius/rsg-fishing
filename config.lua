@@ -256,28 +256,6 @@ Config.BaitsPerFish = {
     }
 }
 
--- prompt language (change as required)
-Config.Lang = {
-	--------------------------------
-	ReadyToFish = "Ready to fish!",
-    PrepRod = "Prepare Fishing Rod",
-    ThrowHook = "Cast Fishing Rod",
-    --------------------------------
-	Fishing = "Fishing",
-	HookFish = "Hook",
-    ReelLure = "Reel Lure",
-    --------------------------------
-	MiniGame = "Get the fish!",
-	ReelIn = "Reel In",
-	Cancel = "Reset Cast",
-	--------------------------------
-    FishName = "Name",
-    FishWeight = "Weight",
-    KeepFish = "Keep Fish",
-    ThrowFish = "Throw Fish",
-    --------------------------------
-}
-
 -- fish data
 Config.fishData = {
 	A_C_FISHBLUEGIL_01_MS        = {"Blue Gil (Medium)","PROVISION_FISH_BLUEGILL","PROVISION_BLUEGILL_DESC"},
