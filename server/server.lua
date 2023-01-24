@@ -152,5 +152,5 @@ AddEventHandler("rsg-fishing:FishToInventory", function(fishModel)
 	local fish_name = fishNames[fishModel]
 	Player.Functions.AddItem(fish, 1)
 	TriggerClientEvent("inventory:client:ItemBox", src, RSGCore.Shared.Items[fish], "add")
-	TriggerClientEvent('RSGCore:Notify', src, Lang:t('primary.you_got_fish_name'), 'primary')
+	TriggerClientEvent('RSGCore:Notify', src, Lang:t('primary.you_got_fish_name',{fish_name = fish_name}), 'primary')
 end)
