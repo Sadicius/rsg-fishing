@@ -3,84 +3,84 @@ local RSGCore = exports['rsg-core']:GetCoreObject()
 -- make bait useable
 RSGCore.Functions.CreateUseableItem("p_baitbread01x", function(source, item)
     local Player = RSGCore.Functions.GetPlayer(source)
-	TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
+    TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
 end)
 
 RSGCore.Functions.CreateUseableItem("p_baitcorn01x", function(source, item)
     local Player = RSGCore.Functions.GetPlayer(source)
-	TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
+    TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
 end)
 
 RSGCore.Functions.CreateUseableItem("p_baitcheese01x", function(source, item)
     local Player = RSGCore.Functions.GetPlayer(source)
-	TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
+    TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
 end)
 
 RSGCore.Functions.CreateUseableItem("p_baitworm01x", function(source, item)
     local Player = RSGCore.Functions.GetPlayer(source)
-	TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
+    TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
 end)
 
 RSGCore.Functions.CreateUseableItem("p_baitcricket01x", function(source, item)
     local Player = RSGCore.Functions.GetPlayer(source)
-	TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
+    TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
 end)
 
 RSGCore.Functions.CreateUseableItem("p_crawdad01x", function(source, item)
     local Player = RSGCore.Functions.GetPlayer(source)
-	TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
+    TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
 end)
 
 RSGCore.Functions.CreateUseableItem("p_finishedragonfly01x", function(source, item)
     local Player = RSGCore.Functions.GetPlayer(source)
-	TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
+    TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
 end)
 
 RSGCore.Functions.CreateUseableItem("p_finisdfishlure01x", function(source, item)
     local Player = RSGCore.Functions.GetPlayer(source)
-	TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
+    TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
 end)
 
 RSGCore.Functions.CreateUseableItem("p_finishdcrawd01x", function(source, item)
     local Player = RSGCore.Functions.GetPlayer(source)
-	TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
+    TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
 end)
 
 RSGCore.Functions.CreateUseableItem("p_finishedragonflylegendary01x", function(source, item)
     local Player = RSGCore.Functions.GetPlayer(source)
-	if Player.Functions.RemoveItem(item.name, 1, item.slot) then
+    if Player.Functions.RemoveItem(item.name, 1, item.slot) then
         TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
     end
 end)
 
 RSGCore.Functions.CreateUseableItem("p_finisdfishlurelegendary01x", function(source, item)
     local Player = RSGCore.Functions.GetPlayer(source)
-	TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
+    TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
 end)
 
 RSGCore.Functions.CreateUseableItem("p_finishdcrawdlegendary01x", function(source, item)
     local Player = RSGCore.Functions.GetPlayer(source)
-	TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
+    TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
 end)
 
 RSGCore.Functions.CreateUseableItem("p_lgoc_spinner_v4", function(source, item)
     local Player = RSGCore.Functions.GetPlayer(source)
-	TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
+    TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
 end)
 
 RSGCore.Functions.CreateUseableItem("p_lgoc_spinner_v6", function(source, item)
     local Player = RSGCore.Functions.GetPlayer(source)
-	TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
+    TriggerClientEvent("rsg-fishing:client:usebait", source, item.name)
 end)
 -- end of make bait useable
 
 -- remove bait when used on fishing rod
 RegisterServerEvent('rsg-fishing:server:removeBaitItem')
 AddEventHandler('rsg-fishing:server:removeBaitItem', function(item)
-	local src = source
-	local Player = RSGCore.Functions.GetPlayer(src)
-	Player.Functions.RemoveItem(item, 1)
-	TriggerClientEvent("inventory:client:ItemBox", src, RSGCore.Shared.Items[item], "remove")
+    local src = source
+    local Player = RSGCore.Functions.GetPlayer(src)
+    Player.Functions.RemoveItem(item, 1)
+    TriggerClientEvent("inventory:client:ItemBox", src, RSGCore.Shared.Items[item], "remove")
 end)
 
 local fishEntity = {
@@ -148,9 +148,9 @@ RegisterServerEvent('rsg-fishing:FishToInventory')
 AddEventHandler("rsg-fishing:FishToInventory", function(fishModel)
     local src = source
     local Player = RSGCore.Functions.GetPlayer(src)
-	local fish = fishEntity[fishModel]
-	local fish_name = fishNames[fishModel]
-	Player.Functions.AddItem(fish, 1)
-	TriggerClientEvent("inventory:client:ItemBox", src, RSGCore.Shared.Items[fish], "add")
-	TriggerClientEvent('RSGCore:Notify', src, Lang:t('primary.you_got_fish_name',{fish_name = fish_name}), 'primary')
+    local fish = fishEntity[fishModel]
+    local fish_name = fishNames[fishModel]
+    Player.Functions.AddItem(fish, 1)
+    TriggerClientEvent("inventory:client:ItemBox", src, RSGCore.Shared.Items[fish], "add")
+    TriggerClientEvent('RSGCore:Notify', src, Lang:t('primary.you_got_fish_name',{fish_name = fish_name}), 'primary')
 end)

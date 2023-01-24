@@ -1,21 +1,21 @@
 local Translations = {
     error = {
-		    you_need_use_your_fishing_rod_first = 'You need to use your fishing rod first.',
+            you_need_use_your_fishing_rod_first = 'You need to use your fishing rod first.',
     },
     success = {
-		    var = 'text goes here',
+            var = 'text goes here',
     },
     primary = {
-		    you_got_fish_name = 'You got a %{fish_name}',
+            you_got_fish_name = 'You got a %{fish_name}',
     },
     menu = {
-		    var = 'text goes here',
+            var = 'text goes here',
     },
     commands = {
-		    var = 'text goes here',
+            var = 'text goes here',
     },
     progressbar = {
-		    var = 'text goes here',
+            var = 'text goes here',
     },
     text = {
         ready_to_fish = 'Ready to fish!',

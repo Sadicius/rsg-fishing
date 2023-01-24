@@ -10,16 +10,16 @@ shared_scripts {
 }
 
 client_scripts {
-	'client/client_js.js',
-	'client/client.lua',
+    'client/client_js.js',
+    'client/client.lua',
 }
 
 server_scripts {
-	'server/server.lua',
+    'server/server.lua',
 }
 
 exports {
-	'GET_TASK_FISHING_DATA',
+    'GET_TASK_FISHING_DATA',
     'SET_TASK_FISHING_DATA',
     'VERTICAL_PROBE'
 }
