@@ -287,7 +287,8 @@ Citizen.CreateThread(function()
                             status = "keep"
                             local entity = FISHING_GET_FISH_HANDLE()
                             local fishModel = GetEntityModel(entity)
-                            TriggerServerEvent("rsg-fishing:FishToInventory", fishModel)
+                            local fishWeight = fishing_data.fish.weight
+                            TriggerServerEvent("rsg-fishing:FishToInventory", fishModel, fishWeight)
                             SetEntityAsMissionEntity(entity, true, true)
                             Wait(3000)
                             DeleteEntity(entity)

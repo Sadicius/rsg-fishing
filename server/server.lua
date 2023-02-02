@@ -145,15 +145,16 @@ local fishNames = {
 
 -- add fish caught to inventory
 RegisterServerEvent('rsg-fishing:FishToInventory')
-AddEventHandler("rsg-fishing:FishToInventory", function(fishModel)
+AddEventHandler("rsg-fishing:FishToInventory", function(fishModel, weight)
     local src = source
     local Player = RSGCore.Functions.GetPlayer(src)
     local firstname = Player.PlayerData.charinfo.firstname
     local lastname = Player.PlayerData.charinfo.lastname
     local fish = fishEntity[fishModel]
     local fish_name = fishNames[fishModel]
+    local fish_weight = string.format("%.2f%%", (weight * 54.25)):gsub("%%", "")
     Player.Functions.AddItem(fish, 1)
     TriggerClientEvent("inventory:client:ItemBox", src, RSGCore.Shared.Items[fish], "add")
     TriggerClientEvent('RSGCore:Notify', src, Lang:t('primary.you_got_fish_name',{fish_name = fish_name}), 'primary')
-    TriggerEvent('rsg-log:server:CreateLog', 'fishing', 'Fish Caught', 'green', firstname..' '..lastname..' caught a '..fish_name)
+    TriggerEvent('rsg-log:server:CreateLog', 'fishing', 'Fish Caught', 'green', firstname..' '..lastname..' caught a '..fish_weight..'KG '..fish_name)
 end)
