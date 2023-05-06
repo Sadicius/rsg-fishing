@@ -685,6 +685,54 @@ function prepareMyPrompt()
     
 end
 
+local DeleteThis = function(holding)
+    NetworkRequestControlOfEntity(holding)
+    SetEntityAsMissionEntity(holding, true, true)
+
+    Wait(100)
+
+    DeleteEntity(holding)
+
+    Wait(500)
+
+    local ped = PlayerPedId()
+    local entitycheck = Citizen.InvokeNative(0xD806CD2A4F2C2996, ped)
+    local holdingcheck = GetPedType(entitycheck)
+
+    if holdingcheck == 0 then
+        return true
+    end
+
+    return false
+end
+
+-- Pickup Fish and Store in Inventory
+CreateThread(function()
+    while true do
+        Wait(1000)
+
+        local ped = PlayerPedId()
+        local holding = Citizen.InvokeNative(0xD806CD2A4F2C2996, ped)
+        local heldModel = Citizen.InvokeNative(0xDA76A9F39210D365, holding)
+
+        if holding then
+            for k, _ in pairs(Config.fishData) do
+                local model = GetHashKey(k)
+
+                if tonumber(heldModel) == tonumber(model) then
+                    local deleted = DeleteThis(holding)
+
+                    if deleted then
+                        TriggerServerEvent('rsg-fishing:FishToInventory', model, 0)
+
+                        break
+                    end
+                end
+            end
+        end
+    end
+end)
+
 AddEventHandler("onResourceStop", function(resourceName)
     if resourceName == GetCurrentResourceName() then
         PromptDelete(fishing_data.prompt_prepare_fishing.throw_hook)
