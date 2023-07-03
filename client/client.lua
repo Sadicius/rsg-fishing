@@ -335,22 +335,30 @@ end)
 Citizen.CreateThread(function()
     prepareMyPrompt()
     while true do
-        Wait(0)
+        local t = 1000
+
         if FISHING_GET_MINIGAME_STATE() == 1 then
+            t = 4
+
             PromptSetActiveGroupThisFrame(fishing_data.prompt_prepare_fishing.group, CreateVarString(10, "LITERAL_STRING", Lang:t('text.ready_to_fish')))
-        end    
-        if FISHING_GET_MINIGAME_STATE() == 6 then
+        elseif FISHING_GET_MINIGAME_STATE() == 6 then
+            t = 4
+
             PromptSetActiveGroupThisFrame(fishing_data.prompt_waiting_hook.group, CreateVarString(10, "LITERAL_STRING", Lang:t('text.fishing')))
-        end
-        if FISHING_GET_MINIGAME_STATE() == 7 then
+        elseif FISHING_GET_MINIGAME_STATE() == 7 then
             fishing_data.fish.weight = FISHING_GET_F_(8)
+            t = 4
+
             PromptSetActiveGroupThisFrame(fishing_data.prompt_hook.group, CreateVarString(10, "LITERAL_STRING", Lang:t('text.get_the_fish')))
-        end
-        if FISHING_GET_MINIGAME_STATE() == 12 then
-            if fishs[GetEntityModel(FISHING_GET_FISH_HANDLE())] ~= nil then
+        elseif FISHING_GET_MINIGAME_STATE() == 12 then
+            if fishs[GetEntityModel(FISHING_GET_FISH_HANDLE())] then
+                t = 4
+
                 PromptSetActiveGroupThisFrame(fishing_data.prompt_finish.group, CreateVarString(10, "LITERAL_STRING",Lang:t('text.name')..": "..fishs[GetEntityModel(FISHING_GET_FISH_HANDLE())] .." // "..Lang:t('text.weight')..": "..string.format("%.2f%%", (fishing_data.fish.weight * 54.25)):gsub("%%", "").."Kg"))
             end
         end
+
+        Wait(t)
     end
 end)
 
