@@ -1,5 +1,5 @@
 ---------------
-Insert the items into qr-core/shared/items.lua (edit any of the descriptions to fit your needs)
+Insert the items into rsg-core/shared/items.lua (edit any of the descriptions to fit your needs)
 ---------------
 	
 	-- fish
