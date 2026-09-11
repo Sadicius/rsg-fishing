@@ -6,10 +6,10 @@ local fishing = false
 local fishStatus = 0
 local fishForce = 0.6
 local nextAttTime = 0
+local tempoPuxando = 0
 local horizontalMove = 0
-local lastState = 0
-local status = nil
 local currentLure = nil
+local hasMinigameOn = false
 lib.locale()
 
 local fishing_data = {
@@ -17,7 +17,7 @@ local fishing_data = {
     prompt_prepare_fishing = { group = nil, change_bait = nil, throw_hook = nil },
     prompt_waiting_hook    = { group = nil, hook_fish = nil, reel_lure = nil, cancel = nil },
     prompt_hook            = { group = nil, reel = nil, cancel = nil },
-    prompt_finish          = { group = nil, keep = nil, throw_fish = nil }
+    prompt_finish          = { group = nil, keep_fish = nil, throw_fish = nil }
 }
 
 local fishs = {
@@ -52,6 +52,20 @@ local fishs = {
 
 RegisterNetEvent('rsg-fishing:client:usebait')
 AddEventHandler('rsg-fishing:client:usebait', function(UsableBait)
+    if fishing then
+        -- already mid-cast, ignore duplicate/rapid bait usage instead of stacking threads
+        lib.notify({ title = locale('cl_error'), description = locale('cl_already_fishing'), type = 'error', duration = 5000 })
+        return
+    end
+
+    local weapon = GetPedCurrentHeldWeapon(cache.ped)
+    local weaponName = GetWeaponName(weapon)
+
+    if weaponName ~= 'WEAPON_FISHINGROD' then
+        lib.notify({ title = locale('cl_error'), description = locale('cl_you_need_use_your_fishing_rod_first'), type = 'error', duration = 7000 })
+        return
+    end
+
     CreateThread(function()
         Citizen.InvokeNative(0x1096603B519C905F, "MMFSH")
         prepareMyPrompt()
@@ -60,18 +74,10 @@ AddEventHandler('rsg-fishing:client:usebait', function(UsableBait)
         currentLure = UsableBait
         UsableBait = nil
         ready = false
-        local weapon = GetPedCurrentHeldWeapon(cache.ped)
-        local weaponName = GetWeaponName(weapon)
-
-        if weaponName ~= 'WEAPON_FISHINGROD' then
-            lib.notify({ title = locale('cl_error'), description = locale('cl_you_need_use_your_fishing_rod_first'), type = 'error', duration = 7000 })
-            return
-        end
 
         TriggerServerEvent('rsg-fishing:server:removeBaitItem', currentLure)
 
         while fishing do
-            Wait(0)
             GET_TASK_FISHING_DATA()
             if FISHING_GET_MINIGAME_STATE() == 1 and ready == false then
                 ready = true
@@ -102,7 +108,7 @@ AddEventHandler('rsg-fishing:client:usebait', function(UsableBait)
                     if IsControlPressed(0, GetHashKey("INPUT_DUCK")) then
                         local actualReelSpeed = Config.ReelSpeed
                         local playerCoords = GetEntityCoords(cache.ped, true, true)
-                        distance = playerCoords - hookPosition
+                        local distance = playerCoords - hookPosition
 
                         distance = hookPosition + distance * actualReelSpeed
                         SetEntityCoords(hookHandle, distance.x, distance.y, distance.z, false, false, false, false)
@@ -286,7 +292,6 @@ AddEventHandler('rsg-fishing:client:usebait', function(UsableBait)
                         if fishing then
                             FISHING_SET_TRANSITION_FLAG(32)
                             fishing = false
-                            status = "keep"
                             local entity = FISHING_GET_FISH_HANDLE()
                             local fishModel = GetEntityModel(entity)
                             local fishWeight = fishing_data.fish.weight
@@ -301,7 +306,6 @@ AddEventHandler('rsg-fishing:client:usebait', function(UsableBait)
                     if IsControlJustPressed(0, GetHashKey("INPUT_AIM")) then
                         if fishing then
                             fishing = false
-                            status = "throw"
                             local entity = FISHING_GET_FISH_HANDLE()
                             local fishModel = GetEntityModel(entity)
                             SetFishingBait(cache.ped, "", 0, 1)
@@ -328,7 +332,6 @@ AddEventHandler('rsg-fishing:client:usebait', function(UsableBait)
                     SetFishingBait(cache.ped, "", 0, 1)
                 end
             end
-            lastState = FISHING_GET_MINIGAME_STATE()
             Wait(sleep)
         end
     end)
@@ -355,7 +358,7 @@ CreateThread(function()
         elseif FISHING_GET_MINIGAME_STATE() == 12 then
             if fishs[GetEntityModel(FISHING_GET_FISH_HANDLE())] then
                 t = 4
-                PromptSetActiveGroupThisFrame(fishing_data.prompt_finish.group, CreateVarString(10, "LITERAL_STRING",locale('cl_name')..": "..fishs[GetEntityModel(FISHING_GET_FISH_HANDLE())] .." // "..locale('cl_weight')..": "..string.format("%.2f%%", (fishing_data.fish.weight * 54.25)):gsub("%%", "").."Kg"))
+                PromptSetActiveGroupThisFrame(fishing_data.prompt_finish.group, CreateVarString(10, "LITERAL_STRING",locale('cl_name')..": "..fishs[GetEntityModel(FISHING_GET_FISH_HANDLE())] .." // "..locale('cl_weight')..": "..string.format("%.2f", fishing_data.fish.weight * Config.FishWeightMultiplier).."Kg"))
             end
         end
 
@@ -407,7 +410,7 @@ function isFishInterested(fishModel)
     local baitedFish = Config.BaitsPerFish[currentLure]
     if baitedFish ~= nil then
         for _, fish in pairs(baitedFish) do
-            if fishs[fishModel] == fish then
+            if fishModel == joaat(fish) then
                 return true
             end
         end
@@ -421,10 +424,6 @@ function SET_TASK_FISHING_DATA()
     end
 end
 
-function FISHING_HAS_MINIGAME_ON()
-    return hasMinigameOn
-end
-
 function FISHING_GET_F_(f)
     return fishing_minigame_struct["f_" .. f]
 end
@@ -433,32 +432,12 @@ function FISHING_GET_MINIGAME_STATE()
     return FISHING_GET_F_(0)
 end
 
-function FISHING_GET_MAX_THROWING_DISTANCE()
-    return FISHING_GET_F_(1)
-end
-
 function FISHING_GET_LINE_DISTANCE()
     return FISHING_GET_F_(2)
 end
 
-function FISHING_GET_TRANSITION_FLAG()
-    return FISHING_GET_F_(6)
-end
-
 function FISHING_GET_FISH_HANDLE()
     return FISHING_GET_F_(7)
-end
-
-function FISHING_GET_CALCULATED_FISH_WEIGHT()
-    return FISHING_GET_F_(8)
-end
-
-function FISHING_GET_F_9()
-    return FISHING_GET_F_(9)
-end
-
-function FISHING_GET_SCRIPT_TIMER()
-    return FISHING_GET_F_(10)
 end
 
 function FISHING_GET_BOBBER_HANDLE()
@@ -474,10 +453,6 @@ function FISHING_SET_F_(f, v)
     SET_TASK_FISHING_DATA()
 end
 
-function FISHING_SET_LINE_DISTANCE(v)
-    FISHING_SET_F_(2, v)
-end
-
 function FISHING_SET_TRANSITION_FLAG(v)
     FISHING_SET_F_(6, v)
 end
@@ -486,24 +461,20 @@ function FISHING_SET_FISH_HANDLE(v)
     FISHING_SET_F_(7, v)
     local weight_index = FishModelToSomeSortOfWeightIndex(GetEntityModel(v))
 
-    FISHING_SET_CALCULATED_FISH_WEIGHT(GetRandomFishWeightForWeightIndex(weight_index) / 54.25)
+    FISHING_SET_CALCULATED_FISH_WEIGHT(GetRandomFishWeightForWeightIndex(weight_index) / Config.FishWeightMultiplier)
 
     fishing_data.fish.rodweight = 2
     FISHING_SET_ROD_WEIGHT(fishing_data.fish.rodweight)
 end
 
 function FISHING_SET_CALCULATED_FISH_WEIGHT(v)
-    fishing_data.fish.weight = v * 54.25
+    fishing_data.fish.weight = v * Config.FishWeightMultiplier
 
     FISHING_SET_F_(8, v)
 end
 
 function FISHING_SET_ROD_WEIGHT(v)
     FISHING_SET_F_(18, v)
-end
-
-function FISHING_SET_ROD_POSITION_LR(v)
-    FISHING_SET_F_(22, v)
 end
 
 function FISHING_SET_ROD_POSITION_UD(v)
@@ -720,8 +691,11 @@ CreateThread(function()
 
         local ped = PlayerPedId()
         local holding = GetFirstEntityPedIsCarrying(ped)
-        local heldModel = GetEntityModel(holding)
-        if holding then
+
+        -- GetFirstEntityPedIsCarrying returns entity handle 0 (not nil) when carrying nothing;
+        -- `if holding then` was always true since 0 is truthy in Lua, wasting work every tick.
+        if holding ~= 0 then
+            local heldModel = GetEntityModel(holding)
             for k, _ in pairs(Config.fishData) do
                 local model = GetHashKey(k)
                 if tonumber(heldModel) == tonumber(model) then
@@ -738,8 +712,11 @@ end)
 
 AddEventHandler("onResourceStop", function(resourceName)
     if resourceName == GetCurrentResourceName() then
+        fishing = false
+        PromptDelete(fishing_data.prompt_prepare_fishing.change_bait)
         PromptDelete(fishing_data.prompt_prepare_fishing.throw_hook)
         PromptDelete(fishing_data.prompt_waiting_hook.hook_fish)
+        PromptDelete(fishing_data.prompt_waiting_hook.reel_lure)
         PromptDelete(fishing_data.prompt_waiting_hook.cancel)
         PromptDelete(fishing_data.prompt_hook.reel)
         PromptDelete(fishing_data.prompt_hook.cancel)

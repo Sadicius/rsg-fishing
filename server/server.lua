@@ -1,6 +1,17 @@
 local RSGCore = exports['rsg-core']:GetCoreObject()
 lib.locale()
 
+-- fast lookup of valid bait item names, built from Config.Baits
+local validBaits = {}
+for i = 1, #Config.Baits do
+    validBaits[Config.Baits[i]] = true
+end
+
+-- per-player anti-exploit state
+local FishingEligible = {} -- [src] = timestamp until which a real catch is accepted
+local LastCatch = {}       -- [src] = GetGameTimer() of the last accepted catch
+
+local ELIGIBILITY_WINDOW = 5 * 60 * 1000 -- ms a consumed bait stays valid for a catch
 
 local function initBait()
     for i = 1, #Config.Baits do
@@ -8,7 +19,9 @@ local function initBait()
 
         RSGCore.Functions.CreateUseableItem(bait, function(source, item)
             local src = source
-            local Player = RSGCore.Functions.GetPlayer(src) -- why do we need this?
+            local Player = RSGCore.Functions.GetPlayer(src)
+            if not Player then return end
+
             TriggerClientEvent('rsg-fishing:client:usebait', src, item.name)
         end)
     end
@@ -20,8 +33,18 @@ RegisterServerEvent('rsg-fishing:server:removeBaitItem')
 AddEventHandler('rsg-fishing:server:removeBaitItem', function(item)
     local src = source
     local Player = RSGCore.Functions.GetPlayer(src)
-    Player.Functions.RemoveItem(item, 1)
+    if not Player then return end
+
+    -- reject anything that isn't a real bait item (client input can't be trusted)
+    if type(item) ~= 'string' or not validBaits[item] then return end
+
+    local removed = Player.Functions.RemoveItem(item, 1)
+    if not removed then return end
+
     TriggerClientEvent('rsg-inventory:client:ItemBox', src, RSGCore.Shared.Items[item], 'remove', 1)
+
+    -- only a player who actually spent a bait item is eligible to redeem a catch
+    FishingEligible[src] = GetGameTimer() + ELIGIBILITY_WINDOW
 end)
 
 local fishEntity = {
@@ -84,16 +107,49 @@ local fishNames = {
     [`A_C_FISHSMALLMOUTHBASS_01_MS`] = Config.fishData.A_C_FISHSMALLMOUTHBASS_01_MS[1],
 }
 
--- add fish caught to inventory
+--[[
+    Add fish caught to inventory.
+    SECURITY: this event is fully client-triggerable, so every argument is treated as
+    untrusted input. We whitelist the fish model, clamp the weight, require the source
+    to have actually consumed a bait item recently (FishingEligible), and rate-limit
+    catches per player to stop it being spammed for infinite free fish/money.
+]]
 RegisterServerEvent('rsg-fishing:FishToInventory')
 AddEventHandler('rsg-fishing:FishToInventory', function(fishModel, weight)
     local src = source
     local Player = RSGCore.Functions.GetPlayer(src)
+    if not Player then return end
+
     local fish = fishEntity[fishModel]
     local fish_name = fishNames[fishModel]
-    local fish_weight = string.format('%.2f%%', (weight * 54.25)):gsub('%%', '')
+    if not fish or not fish_name then return end -- unknown/forged fish model
 
-    -- Get the player's character name correctly
+    local now = GetGameTimer()
+
+    if LastCatch[src] and (now - LastCatch[src]) < Config.CatchCooldown then
+        return -- catching too fast, ignore
+    end
+
+    if type(weight) ~= 'number' then return end
+
+    if weight > 0 then
+        -- a real minigame catch must be backed by a bait item consumed via removeBaitItem
+        local eligibleUntil = FishingEligible[src]
+        if not eligibleUntil or now > eligibleUntil then return end
+        FishingEligible[src] = nil -- one-time use
+
+        -- clamp to the maximum weight the minigame can legitimately produce
+        if weight > Config.MaxRawFishWeight then
+            weight = Config.MaxRawFishWeight
+        end
+    else
+        weight = 0 -- picked up off the ground, always a nominal catch
+    end
+
+    LastCatch[src] = now
+
+    local fish_weight = string.format('%.2f', weight * Config.FishWeightMultiplier)
+
     local charinfo = Player.PlayerData.charinfo
     local firstname = charinfo.firstname
     local lastname = charinfo.lastname
@@ -106,7 +162,13 @@ AddEventHandler('rsg-fishing:FishToInventory', function(fishModel, weight)
         firstname .. ' ' .. lastname .. ' ' .. locale('sv_discord_c') .. ' ' .. fish_weight .. 'KG ' .. fish_name)
 end)
 
-AddEventHandler("onResourceStart", function(resourceName)
+AddEventHandler('playerDropped', function()
+    local src = source
+    FishingEligible[src] = nil
+    LastCatch[src] = nil
+end)
+
+AddEventHandler('onResourceStart', function(resourceName)
     if resourceName ~= GetCurrentResourceName() then
         return
     end

@@ -1,10 +1,13 @@
 Config = {}
 
 -- settings
-Config.Difficulty = 500 -- use -1 for testing (reduced for easier catches)
-Config.ReelSpeed = 0.025 -- increased reel speed for faster reeling
+Config.Difficulty = 500 -- how hard the fish pulls back while reeling
+Config.ReelSpeed = 0.025 -- how fast the hook reels in towards the player
 Config.Debug = false
-Config.StruggleChance = 0.3 -- fish struggle less frequently (reduced from ~0.2-0.8)
+Config.StruggleChance = 0.3 -- chance (0.0-1.0) per tick that a hooked fish struggles
+Config.FishWeightMultiplier = 54.25 -- converts internal game weight units into displayed KG
+Config.CatchCooldown = 3000 -- ms a player must wait between accepted fish catches (anti-spam/anti-exploit)
+Config.MaxRawFishWeight = 0.15 -- sanity cap on the raw (pre-multiplier) weight value accepted from clients
 
 -- fishing baits
 Config.Baits = {
