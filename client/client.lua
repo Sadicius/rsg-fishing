@@ -77,8 +77,20 @@ AddEventHandler('rsg-fishing:client:usebait', function(UsableBait)
 
         TriggerServerEvent('rsg-fishing:server:removeBaitItem', currentLure)
         StartBobberMarker()
-
+        
+        local noRodSince = nil
         while fishing do
+            -- every other way out of this loop needs the minigame to be running; putting the rod away before the cast
+            -- (holster, another weapon, death) never ended it, so the panel and the last bait stayed for good
+            if GetWeaponName(GetPedCurrentHeldWeapon(cache.ped)) == 'WEAPON_FISHINGROD' and not IsPedDeadOrDying(cache.ped, true) then
+                noRodSince = nil
+            elseif not noRodSince then
+                noRodSince = GetGameTimer()
+            elseif GetGameTimer() - noRodSince > 2000 then
+                fishing = false
+                SetFishingBait(cache.ped, "", 0, 1)
+                break
+            end
             GET_TASK_FISHING_DATA()
             if FISHING_GET_MINIGAME_STATE() == 1 and ready == false then
                 ready = true
@@ -335,6 +347,9 @@ AddEventHandler('rsg-fishing:client:usebait', function(UsableBait)
             end
             Wait(sleep)
         end
+        -- the cast is over (kept, thrown back, line cut, rod put away): forget the bait so the next one starts clean
+        currentLure = nil
+        ready = false
     end)
 end)
 
@@ -650,6 +665,7 @@ function GetRandomFishWeightForWeightIndex(index)
 end
 
 function prepareMyPrompt()
+    if fishing_data.prompt_prepare_fishing.group then return end -- already registered; onResourceStop deletes them
     fishing_data.prompt_prepare_fishing.group = GetRandomIntInRange(0, 0xffffff)
     local prompt = PromptRegisterBegin()
     PromptSetControlAction(prompt, GetHashKey("INPUT_AIM")) -- MOUSE LEFT CLICK
