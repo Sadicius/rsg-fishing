@@ -46,7 +46,6 @@ Config.Baits = {
     "p_baitbread01x",
     "p_baitcorn01x",
     "p_baitcheese01x",
-    "p_baitcorm01x",
     "p_baitcricket01x",
     "p_baitworm01x",
     "p_crawdad01x",
