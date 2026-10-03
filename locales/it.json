@@ -17,5 +17,8 @@
   "cl_throw_fish": "Butta il pesce",
   "sv_you_got_fish_name": "Hai preso un",
   "sv_discord_b": "Pesce | Catturato",
-  "sv_discord_c": "Ha catturato un "
+  "sv_discord_c": "Ha catturato un ",
+  "cl_no_bait": "No bait on your rod",
+  "cl_use_bait_hint": "Use bait from your inventory",
+  "cl_bait": "Bait"
 }

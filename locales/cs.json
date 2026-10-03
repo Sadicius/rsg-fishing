@@ -17,5 +17,8 @@
   "cl_throw_fish": "Hodit rybu",
   "sv_you_got_fish_name": "Chytili jste",
   "sv_discord_b": "Ryba | Úlovek",
-  "sv_discord_c": "Chycen/a "
+  "sv_discord_c": "Chycen/a ",
+  "cl_no_bait": "No bait on your rod",
+  "cl_use_bait_hint": "Use bait from your inventory",
+  "cl_bait": "Bait"
 }

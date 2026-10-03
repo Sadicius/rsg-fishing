@@ -17,5 +17,8 @@
   "cl_throw_fish": "Jogar Fora o Peixe",
   "sv_you_got_fish_name": "Você pegou um/uma",
   "sv_discord_b": "Peixe | Capturado",
-  "sv_discord_c": "Capturou um/uma "
+  "sv_discord_c": "Capturou um/uma ",
+  "cl_no_bait": "No bait on your rod",
+  "cl_use_bait_hint": "Use bait from your inventory",
+  "cl_bait": "Bait"
 }

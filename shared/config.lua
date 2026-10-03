@@ -9,6 +9,38 @@ Config.FishWeightMultiplier = 54.25 -- converts internal game weight units into 
 Config.CatchCooldown = 3000 -- ms a player must wait between accepted fish catches (anti-spam/anti-exploit)
 Config.MaxRawFishWeight = 0.15 -- sanity cap on the raw (pre-multiplier) weight value accepted from clients
 
+-- key labels shown in the top-left controls HUD (display only)
+Config.ControlKeys = {
+    UseBait   = 'TAB',  -- shown when the rod has no bait (open inventory)
+    Prepare   = 'RMB',
+    Cast      = 'LMB',
+    Hook      = 'LMB',
+    ResetCast = 'SHIFT',
+    ReelLure  = 'CTRL',
+    ReelIn    = 'SPACE',
+    KeepFish  = 'LMB',
+    ThrowFish = 'RMB',
+}
+
+-- controls watched for the live "pressed" highlight in the HUD (hash or "INPUT_NAME")
+Config.ControlInputs = {
+    Prepare   = 'INPUT_AIM',
+    Cast      = 0x07CE1E61,
+    Hook      = 'INPUT_ATTACK',
+    ResetCast = 0x8FFC75D6,
+    ReelLure  = 'INPUT_DUCK',
+    ReelIn    = 0xFBD7B3E6,
+    KeepFish  = 'INPUT_ATTACK',
+    ThrowFish = 'INPUT_AIM',
+}
+
+-- bobber visibility (helps players see where their float is)
+Config.BobberMarker = {
+    Enabled    = true,
+    ScreenIcon = true,   -- on-screen float image that follows the bobber (turns into a fish when hooked)
+    ScreenIconSize = 46, -- px
+}
+
 -- fishing baits
 Config.Baits = {
     "p_baitbread01x",

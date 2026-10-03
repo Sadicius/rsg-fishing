@@ -1,147 +1,85 @@
-<img width="2948" height="497" alt="rsg_framework" src="https://github.com/user-attachments/assets/638791d8-296d-4817-a596-785325c1b83a" />
+# rsg-fishing
 
-# 🎣 rsg-fishing
-**Interactive fishing system for RedM using RSG Core.**
+Fishing for **RSG-Core** (RedM). Players equip a fishing rod, bait it with an item from their inventory, cast, hook and reel in fish. Caught fish go into the inventory with their weight. An on-screen HUD guides the player through each step.
 
-![Platform](https://img.shields.io/badge/platform-RedM-darkred)
-![License](https://img.shields.io/badge/license-GPL--3.0-green)
+## Features
 
-> Cast, hook, and reel with a native-backed minigame.  
-> Supports multiple baits, fish sizes/species, weight metadata, keep/throw, and Discord logging.
+- **Bait system:** 15 usable bait and lure items. Each fish species has its own bait preferences (`Config.BaitsPerFish`).
+- **Controls HUD (top-left):** a dark panel that shows the current step and the keys for it.
+  - Rod out with no bait: warns the player to use bait from their inventory.
+  - Rod baited: shows the bait name and the keys to prepare and cast.
+  - Line in the water: hook, reset cast, reel lure.
+  - Fish on: reel in, reset cast (green highlight).
+  - Fish caught: fish name and weight, keep or throw back.
+- **Live key presses:** a HUD row lights up while the player holds its key.
+- **Bobber indicator:** a float image follows the bobber on screen. It turns into a wriggling fish when a fish is hooked, and back into a float if the fish gets away.
+- **Server-side checks:** only real bait items are accepted, a catch needs spent bait first, a catch cooldown applies, and fish weight is capped.
+- **Logging:** catches are sent to `rsg-log` (`fishing` channel).
+- **Languages:** cs, de, el, en, es, fr, it, pl, pt-br.
 
----
+## Dependencies
 
-## 🛠️ Dependencies
-- [**rsg-core**](https://github.com/Rexshack-RedM/rsg-core) 🤠  
-- [**ox_lib**](https://github.com/overextended/ox_lib) ⚙️ *(locales, notifications)*  
-- [**rsg-inventory**](https://github.com/Rexshack-RedM/rsg-inventory) 🎒 *(items & ItemBox)*  
+- [rsg-core](https://github.com/Rexshack-RedM/rsg-core)
+- [ox_lib](https://github.com/overextended/ox_lib)
+- `rsg-log` (optional, for catch logs)
 
-**Locales included:** `en`, `fr`, `es`, `it`, `pt-br`, `el`  
-**License:** GPL-3.0
+## Installation
 
----
-
-## ✨ Features
-
-- 🎯 **Fishing minigame** with difficulty and reel speed controls (native fishing struct).
-- 🪱 **Baits**: bread, corn, cheese, worm, cricket, crawdad, dragonfly… (`Config.Baits`)
-- 🐟 **Species & Sizes**: pickerel, trout, bass, catfish, salmon, perch, chain pickerel… with **SM/MS/ML/LG** variants.
-- ⚖️ **Weight metadata** saved on the fish item (e.g., `metadata = { weight = "2.13" }`).
-- 🧺 **Keep or Throw**: choose to keep fish (add item) or throw it back.
-- 🔔 **Discord logging** (if `rsg-log` present): embeds with player name, species and weight.
-- 🌐 **Multi-language** prompts/buttons via `ox_lib` locales.
-- 🧩 **JS helper** (`client_js.js`) to **get/set native fishing data** for a smoother minigame.
-
----
-
-## 🎮 Actions
-Prompts shown during the flow:
-- **Prepare Fishing Rod**, **Cast Fishing Rod**, **Hook**, **Reset Cast**  
-- **Reel Lure**, **Reel In**  
-- **Keep Fish**, **Throw Fish**  
-
-*(Actual keys depend on your client keybinds and prompt setup; texts are localized.)*
-
----
-
-## ⚙️ Configuration (`config.lua`)
-
-### Core settings
-```lua
-Config = {}
-
--- Minigame tuning
-Config.Difficulty = 1250     -- use -1 for testing (easier)
-Config.ReelSpeed  = 0.0125   -- reel acceleration
-Config.Debug      = false
-```
-
-### Baits
-```lua
-Config.Baits = {
-  "p_baitBread01x",
-  "p_baitCorn01x",
-  "p_baitCheese01x",
-  "p_baitWorm01x",
-  "p_baitCricket01x",
-  "p_crawdad01x",
-  "p_finishedragonfly01x",
-}
-```
-All bait items are automatically registered as **usable** on the server and call the client event:
-```lua
-TriggerClientEvent('rsg-fishing:client:usebait', src, item.name)
-```
-
-### Fish database
-Two mappings are used:
-
-- **`FishData`**: model → data tables (weights/behavior) used by the minigame  
-- **`fishNames` / `fishEntity`**: model → (display name, item key, description key)
-
-Example:
-```lua
-A_C_FISHBLUEGIL_01_SM        = {"Bluegill (Small)","PROVISION_FISH_BLUEGILL","PROVISION_FISH_BLUEGILL_DESC"},
-A_C_FISHBLUEGIL_01_MS        = {"Bluegill (Medium)","PROVISION_FISH_BLUEGILL","PROVISION_FISH_BLUEGILL_DESC"},
-A_C_FISHCHAINPICKEREL_01_SM  = {"Chain Pickerel (Small)","PROVISION_FISH_CHAIN_PICKEREL","PROVISION_FISH_CHPICKREL_DESC"},
-A_C_FISHCHANNELCATFISH_01_LG = {"Channel Catfish (Large)","PROVISION_FISH_CHANNEL_CATFISH","PROVISION_FISH_CHNCATFISH_DESC"},
--- ...
-```
-
-> ✅ Ensure **every item key** (e.g., `PROVISION_FISH_BLUEGILL`) **exists in `rsg-inventory`** with a proper item definition.
-
----
-
-## 🧺 Inventory items (examples)
-
-Add bait items (RSG Inventory format):
-```lua
-p_baitbread01x     = { name = 'p_baitbread01x',     label = 'Bread Bait',     weight = 50,  type = 'item', image = 'p_baitbread01x.png',     unique = false, useable = true,  decay = 300, delete = true, shouldClose = true, description = 'Simple bread bait' },
-p_baitcorn01x      = { name = 'p_baitcorn01x',      label = 'Corn Bait',      weight = 50,  type = 'item', image = 'p_baitcorn01x.png',      unique = false, useable = true,  decay = 300, delete = true, shouldClose = true, description = 'Sweet corn bait' },
-p_baitcheese01x    = { name = 'p_baitcheese01x',    label = 'Cheese Bait',    weight = 50,  type = 'item', image = 'p_baitcheese01x.png',    unique = false, useable = true,  decay = 300, delete = true, shouldClose = true, description = 'Pungent cheese bait' },
-p_baitworm01x      = { name = 'p_baitworm01x',      label = 'Worm Bait',      weight = 50,  type = 'item', image = 'p_baitworm01x.png',      unique = false, useable = true,  decay = 300, delete = true, shouldClose = true, description = 'Classic worm bait' },
-p_baitcricket01x   = { name = 'p_baitcricket01x',   label = 'Cricket Bait',   weight = 50,  type = 'item', image = 'p_baitcricket01x.png',   unique = false, useable = true,  decay = 300, delete = true, shouldClose = true, description = 'Lively cricket bait' },
-p_crawdad01x       = { name = 'p_crawdad01x',       label = 'Crawdad Bait',   weight = 50,  type = 'item', image = 'p_crawdad01x.png',       unique = false, useable = true,  decay = 300, delete = true, shouldClose = true, description = 'Fresh crawdad bait' },
-p_finishedragonfly01x = { name = 'p_finishedragonfly01x', label = 'Dragonfly Bait', weight = 50, type = 'item', image = 'p_finishedragonfly01x.png', unique = false, useable = true, decay = 300, delete = true, shouldClose = true, description = 'Eye-catching dragonfly bait' },
-```
-
-Add fish items (the **keys must match** the ones in config mappings):
-```lua
-PROVISION_FISH_BLUEGILL         = { name = 'PROVISION_FISH_BLUEGILL',         label = 'Bluegill',            weight = 100, type = 'item', image = 'fish_bluegill.png',         unique = false, useable = false, decay = 0,   delete = false, shouldClose = true, description = 'A common bluegill. Metadata includes weight.' },
-PROVISION_FISH_CHAIN_PICKEREL   = { name = 'PROVISION_FISH_CHAIN_PICKEREL',   label = 'Chain Pickerel',      weight = 100, type = 'item', image = 'fish_chain_pickerel.png',   unique = false, useable = false, decay = 0,   delete = false, shouldClose = true, description = 'A feisty pickerel. Metadata includes weight.' },
-PROVISION_FISH_CHANNEL_CATFISH  = { name = 'PROVISION_FISH_CHANNEL_CATFISH',  label = 'Channel Catfish',     weight = 100, type = 'item', image = 'fish_channel_catfish.png',  unique = false, useable = false, decay = 0,   delete = false, shouldClose = true, description = 'Large whiskered catfish. Metadata includes weight.' },
-PROVISION_FISH_STEELHEAD_TROUT  = { name = 'PROVISION_FISH_STEELHEAD_TROUT',  label = 'Rainbow Trout',       weight = 100, type = 'item', image = 'fish_steelhead_trout.png',  unique = false, useable = false, decay = 0,   delete = false, shouldClose = true, description = 'Colorful trout. Metadata includes weight.' },
--- add the rest to match your `fishEntity` mapping…
-```
-
-> ℹ️ The server calls:  
-> `Player.Functions.AddItem(fishItemName, 1, nil, { weight = fish_weight })`  
-> so **weight is stored as metadata** on the item.
-
----
-
-## 📂 Installation
-1. Put `rsg-fishing` in `resources/[rsg]`.  
-2. Ensure `rsg-core`, `ox_lib`, and `rsg-inventory` are installed.  
-3. Add to `server.cfg`:
-   ```cfg
+1. Put `rsg-fishing` in your `resources` folder.
+2. Make sure the bait items listed in `Config.Baits` and the fish items exist in your RSG shared items.
+3. Add it to `server.cfg` after its dependencies:
+   ```
    ensure ox_lib
    ensure rsg-core
-   ensure rsg-inventory
    ensure rsg-fishing
    ```
-4. Restart your server.
+4. Restart the server. After updating the UI files, restart the resource (players may need to reconnect).
 
----
+## How to fish (players)
 
-## 🌍 Locales
-Loaded by `lib.locale()`;
+1. Take out your fishing rod.
+2. Use a bait item from your inventory.
+3. Follow the HUD: prepare the rod, then cast.
+4. Watch the float. When it turns into a fish, hook it and reel it in.
+5. Keep the fish or throw it back.
 
----
+## Configuration (`config.lua`)
 
-## 💎 Credits
-- Original source **FRP_Framework** → https://github.com/Faroeste-Roleplay/frp-lua-rdr3  
-- Additional edits/improvements from **VORP Core** → https://github.com/VORPCORE/vorp_fishing-lua  
-- RSG / Rexshack-RedM adaptation & maintenance  
-- Community contributors & translators  
-- License: GPL-3.0  
+| Option | Description |
+|---|---|
+| `Config.Difficulty` | How hard fish pull back while reeling |
+| `Config.ReelSpeed` | How fast the hook reels towards the player |
+| `Config.StruggleChance` | Chance per tick that a hooked fish struggles (0.0–1.0) |
+| `Config.FishWeightMultiplier` | Converts game weight units to the KG shown to players |
+| `Config.CatchCooldown` | Minimum ms between accepted catches |
+| `Config.MaxRawFishWeight` | Upper limit on the weight accepted from clients |
+| `Config.Debug` | Debug prints and fish markers |
+| `Config.ControlKeys` | Key names shown in the HUD (display only) |
+| `Config.ControlInputs` | Controls watched for the live key highlight (hash or `INPUT_*` name) |
+| `Config.BobberMarker` | `Enabled`, `ScreenIcon` (float/fish image), `ScreenIconSize` (px) |
+| `Config.Baits` | Items that can be used as bait |
+| `Config.BaitsPerFish` | Which baits attract which fish |
+| `Config.fishData` | Fish names and provision data |
+
+If a HUD key name is wrong for your keybinds, change it in `Config.ControlKeys`. If a row doesn't light up when the key is pressed, change its control in `Config.ControlInputs`.
+
+## Files
+
+```
+client/client.lua     Fishing logic, HUD and bobber updates
+client/client_js.js   Fishing minigame data read/write
+server/server.lua     Bait items, catch checks, inventory, logging
+html/index.html       Controls HUD and bobber indicator (NUI)
+locales/*.json        Translations
+config.lua            Settings
+```
+
+## Exports (client)
+
+- `GET_TASK_FISHING_DATA_EXTRA`
+- `SET_TASK_FISHING_DATA_EXTRA`
+- `VERTICAL_PROBE`
+
+## License
+
+See [LICENSE](LICENSE).

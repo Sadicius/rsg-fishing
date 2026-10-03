@@ -17,5 +17,8 @@
   "cl_throw_fish": "Fisch zurückwerfen",
   "sv_you_got_fish_name": "Du hast einen",
   "sv_discord_b": "Fisch | Gefangen",
-  "sv_discord_c": "hat gefangen: "
+  "sv_discord_c": "hat gefangen: ",
+  "cl_no_bait": "No bait on your rod",
+  "cl_use_bait_hint": "Use bait from your inventory",
+  "cl_bait": "Bait"
 }

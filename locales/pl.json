@@ -17,5 +17,8 @@
   "cl_throw_fish": "Wyrzuć rybę",
   "sv_you_got_fish_name": "Złowiłeś",
   "sv_discord_b": "Ryba | Złowiona",
-  "sv_discord_c": "Złowiono "
+  "sv_discord_c": "Złowiono ",
+  "cl_no_bait": "No bait on your rod",
+  "cl_use_bait_hint": "Use bait from your inventory",
+  "cl_bait": "Bait"
 }

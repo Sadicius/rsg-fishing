@@ -17,5 +17,8 @@
   "cl_throw_fish": "Throw Fish",
   "sv_you_got_fish_name": "You got a",
   "sv_discord_b": "Fish | Caught",
-  "sv_discord_c": "Caught a "
+  "sv_discord_c": "Caught a ",
+  "cl_no_bait": "No bait on your rod",
+  "cl_use_bait_hint": "Use bait from your inventory",
+  "cl_bait": "Bait"
 }

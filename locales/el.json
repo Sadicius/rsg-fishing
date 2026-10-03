@@ -17,5 +17,8 @@
   "cl_throw_fish": "Πέτα το ψάρι",
   "sv_you_got_fish_name": "Έπιασες ένα",
   "sv_discord_b": "Ψάρι | Πιάστηκε",
-  "sv_discord_c": "Έπιασε ένα "
+  "sv_discord_c": "Έπιασε ένα ",
+  "cl_no_bait": "No bait on your rod",
+  "cl_use_bait_hint": "Use bait from your inventory",
+  "cl_bait": "Bait"
 }

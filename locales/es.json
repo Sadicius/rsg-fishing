@@ -17,5 +17,8 @@
   "cl_throw_fish": "Arrojar pez",
   "sv_you_got_fish_name": "Conseguiste un",
   "sv_discord_b": "Pesca | Atrapado",
-  "sv_discord_c": "Atrapaste un "
+  "sv_discord_c": "Atrapaste un ",
+  "cl_no_bait": "No bait on your rod",
+  "cl_use_bait_hint": "Use bait from your inventory",
+  "cl_bait": "Bait"
 }

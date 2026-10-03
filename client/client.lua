@@ -76,6 +76,7 @@ AddEventHandler('rsg-fishing:client:usebait', function(UsableBait)
         ready = false
 
         TriggerServerEvent('rsg-fishing:server:removeBaitItem', currentLure)
+        StartBobberMarker()
 
         while fishing do
             GET_TASK_FISHING_DATA()
@@ -337,31 +338,114 @@ AddEventHandler('rsg-fishing:client:usebait', function(UsableBait)
     end)
 end)
 
+-- =========================================================
+-- Controls HUD (NUI, top-left) – replaces native prompt groups
+-- =========================================================
+local hudKey = nil
+local hudRows = nil
+
+local function resolveControl(c)
+    if type(c) == 'string' then return joaat(c) end
+    return c
+end
+
+-- live key-press feedback: highlights a row while its button is held
 CreateThread(function()
-    prepareMyPrompt()
+    local last = {}
     while true do
-        local t = 1000
+        if hudRows then
+            local changed, pressed = false, {}
+            for _, r in ipairs(hudRows) do
+                local c = resolveControl(Config.ControlInputs[r.id])
+                local down = c and (IsControlPressed(0, c) or IsDisabledControlPressed(0, c)) or false
+                pressed[r.id] = down
+                if last[r.id] ~= down then changed = true end
+            end
+            if changed then
+                last = pressed
+                SendNUIMessage({ action = 'pressed', pressed = pressed })
+            end
+            Wait(0)
+        else
+            last = {}
+            Wait(250)
+        end
+    end
+end)
 
-        if FISHING_GET_MINIGAME_STATE() == 1 then
-            t = 4
-            PromptSetActiveGroupThisFrame(fishing_data.prompt_prepare_fishing.group, CreateVarString(10, "LITERAL_STRING", locale('cl_ready_to_fish')))
+local function holdingRod()
+    local weapon = GetPedCurrentHeldWeapon(cache.ped)
+    return weapon and GetWeaponName(weapon) == 'WEAPON_FISHINGROD'
+end
 
-        elseif FISHING_GET_MINIGAME_STATE() == 6 then
-            t = 4
-            PromptSetActiveGroupThisFrame(fishing_data.prompt_waiting_hook.group, CreateVarString(10, "LITERAL_STRING", locale('cl_fishing')))
+local function baitLabel()
+    if not currentLure then return nil end
+    local item = RSGCore.Shared.Items[currentLure]
+    return (item and item.label) or currentLure
+end
 
-        elseif FISHING_GET_MINIGAME_STATE() == 7 then
-            fishing_data.fish.weight = FISHING_GET_F_(8)
-            t = 4
-            PromptSetActiveGroupThisFrame(fishing_data.prompt_hook.group, CreateVarString(10, "LITERAL_STRING", locale('cl_get_the_fish')))
+local function controlsFor(state)
+    local k = Config.ControlKeys
+    if not fishing then
+        if holdingRod() then
+            return locale('cl_no_bait'), 'nobait', {
+                { id = 'UseBait', key = k.UseBait, label = locale('cl_use_bait_hint') },
+            }, nil
+        end
+        return nil
+    end
+    if state ~= 6 and state ~= 7 and state ~= 12 then
+        -- baited / preparing / aiming / casting: keep showing cast instructions
+        return locale('cl_ready_to_fish'), nil, {
+            { id = 'Prepare', key = k.Prepare, label = locale('cl_prepare_fishing_rod') },
+            { id = 'Cast', key = k.Cast,    label = locale('cl_cast_fishing_rod') },
+        }
+    elseif state == 6 then
+        return locale('cl_fishing'), nil, {
+            { id = 'Hook', key = k.Hook,      label = locale('cl_hook') },
+            { id = 'ResetCast', key = k.ResetCast, label = locale('cl_reset_cast') },
+            { id = 'ReelLure', key = k.ReelLure,  label = locale('cl_reel_lure') },
+        }
+    elseif state == 7 then
+        return locale('cl_get_the_fish'), 'hooked', {
+            { id = 'ReelIn', key = k.ReelIn,    label = locale('cl_reel_in') },
+            { id = 'ResetCast', key = k.ResetCast, label = locale('cl_reset_cast') },
+        }
+    elseif state == 12 then
+        local name = fishs[GetEntityModel(FISHING_GET_FISH_HANDLE())]
+        if not name then
+            return locale('cl_ready_to_fish'), nil, {
+                { id = 'Prepare', key = k.Prepare, label = locale('cl_prepare_fishing_rod') },
+                { id = 'Cast',    key = k.Cast,    label = locale('cl_cast_fishing_rod') },
+            }
+        end
+        local sub = locale('cl_name')..": "..name.."  //  "..locale('cl_weight')..": "..string.format("%.2f", fishing_data.fish.weight * Config.FishWeightMultiplier).."Kg"
+        return sub, 'caught', {
+            { id = 'KeepFish', key = k.KeepFish,  label = locale('cl_keep_fish') },
+            { id = 'ThrowFish', key = k.ThrowFish, label = locale('cl_throw_fish') },
+        }
+    end
+end
 
-        elseif FISHING_GET_MINIGAME_STATE() == 12 then
-            if fishs[GetEntityModel(FISHING_GET_FISH_HANDLE())] then
-                t = 4
-                PromptSetActiveGroupThisFrame(fishing_data.prompt_finish.group, CreateVarString(10, "LITERAL_STRING",locale('cl_name')..": "..fishs[GetEntityModel(FISHING_GET_FISH_HANDLE())] .." // "..locale('cl_weight')..": "..string.format("%.2f", fishing_data.fish.weight * Config.FishWeightMultiplier).."Kg"))
+CreateThread(function()
+    while true do
+        local t = 250
+        local state = FISHING_GET_MINIGAME_STATE()
+        if state == 7 then fishing_data.fish.weight = FISHING_GET_F_(8) end
+
+        local title, mode, rows = controlsFor(state)
+        local info = (fishing and baitLabel()) and (locale('cl_bait') .. ": " .. baitLabel()) or nil
+        local key = title and (tostring(state) .. "|" .. title .. "|" .. tostring(info)) or nil
+        if key ~= hudKey then
+            hudKey = key
+            if rows then
+                hudRows = rows
+                SendNUIMessage({ action = 'controls', show = true, title = title, info = info, mode = mode, rows = rows })
+            else
+                hudRows = nil
+                SendNUIMessage({ action = 'controls', show = false })
             end
         end
-
         Wait(t)
     end
 end)
@@ -712,6 +796,7 @@ end)
 
 AddEventHandler("onResourceStop", function(resourceName)
     if resourceName == GetCurrentResourceName() then
+        SendNUIMessage({ action = 'controls', show = false })
         fishing = false
         PromptDelete(fishing_data.prompt_prepare_fishing.change_bait)
         PromptDelete(fishing_data.prompt_prepare_fishing.throw_hook)
@@ -724,3 +809,44 @@ AddEventHandler("onResourceStop", function(resourceName)
         PromptDelete(fishing_data.prompt_finish.throw_fish)
     end
 end)
+
+
+-- =========================================================
+-- Bobber visibility marker
+-- =========================================================
+local bobberMarkerActive = false
+
+function StartBobberMarker()
+    local cfg = Config.BobberMarker
+    if not cfg or not cfg.Enabled or not cfg.ScreenIcon or bobberMarkerActive then return end
+    bobberMarkerActive = true
+
+    CreateThread(function()
+        while fishing do
+            local state = FISHING_GET_MINIGAME_STATE()
+            if state == 6 or state == 7 then
+                local bobber = FISHING_GET_BOBBER_HANDLE()
+                if not bobber or bobber == 0 or not DoesEntityExist(bobber) then
+                    bobber = FISHING_GET_HOOK_HANDLE()
+                end
+                if bobber and bobber ~= 0 and DoesEntityExist(bobber) then
+                    local pos = GetEntityCoords(bobber)
+                    do
+                        local onScreen, sx, sy = GetScreenCoordFromWorldCoord(pos.x, pos.y, pos.z + 0.15)
+                        SendNUIMessage({ action = 'bobber', show = onScreen and true or false, x = sx, y = sy,
+                            hooked = state == 7, size = cfg.ScreenIconSize })
+                    end
+                    Wait(0)
+                else
+                    SendNUIMessage({ action = 'bobber', show = false })
+                    Wait(100)
+                end
+            else
+                SendNUIMessage({ action = 'bobber', show = false })
+                Wait(250)
+            end
+        end
+        bobberMarkerActive = false
+        SendNUIMessage({ action = 'bobber', show = false })
+    end)
+end
