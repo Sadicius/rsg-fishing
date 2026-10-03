@@ -143,6 +143,8 @@ AddEventHandler('rsg-fishing:client:usebait', function(UsableBait)
                             local dist = #(hookPosition - fishPosition)
                             if dist <= 1.6 then
                                 fishHandle = f
+                                -- the server only accepts the species this bait attracts, so do not hook the others
+                                if isFishInterested(GetEntityModel(f)) then fishHandle = f end
                             else
                                 if isFishInterested(GetEntityModel(f)) then
                                     TaskGoToEntity(f, bobberPosition, 100, 1, 1.0, 2.0, 0)
